@@ -1,9 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const { issueJWT } = require("../middlewares/authenticateJWT");
 const router = express.Router();
 
-module.exports = (User, SECRET_KEY) => {
+module.exports = (User) => {
   router.post("/users/signup", async (req, res) => {
     const {
       email,
@@ -73,7 +73,7 @@ module.exports = (User, SECRET_KEY) => {
         third_party_agreement,
       });
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '1h' });
+      const token = issueJWT(newUser);
       res.status(201).json({ success: true, token });
     } catch (error) {
       console.error('❌ 회원가입 에러:', error);

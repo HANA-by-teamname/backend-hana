@@ -1,9 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const { issueJWT } = require("../middlewares/authenticateJWT");
 const router = express.Router();
 
-module.exports = (User, SECRET_KEY) => {
+module.exports = (User) => {
   router.post("/users/login", async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -25,12 +25,10 @@ module.exports = (User, SECRET_KEY) => {
         });
       }
 
-      const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "1h" });
-
+      const token = issueJWT(user);
       return res.status(200).json({ success: true, token });
-
     } catch (error) {
-      console.error('❌ 로그인 에러:', error);
+      console.error("❌ 로그인 에러:", error);
       res.status(500).json({
         success: false,
         errors: [{ field: "exception", reason: error.message || "알 수 없는 오류" }],
