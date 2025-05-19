@@ -1,11 +1,17 @@
+require('dotenv').config();
+
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 4000;
 const SECRET_KEY = "your_secret_key";
+
+app.use(cors());
+app.use(express.json());
 
 // MongoDB 연결
 mongoose.connect("mongodb://localhost:27017/hana", {
@@ -13,6 +19,7 @@ mongoose.connect("mongodb://localhost:27017/hana", {
   useUnifiedTopology: true,
 });
 
+// 스키마
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -28,8 +35,6 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
-
-app.use(express.json());
 
 // 회원가입
 app.post("/users/signup", async (req, res) => {
@@ -57,6 +62,12 @@ app.post("/users/signup", async (req, res) => {
       errors.push({ field: "nickname", reason: "이미 존재하는 닉네임입니다." });
     }
   }
+
+  const existingEmail = await User.findOne({ email });
+  if (existingEmail) {
+    errors.push({ field: "email", reason: "이미 존재하는 이메일입니다." });
+  }
+
 
   if (!gender) {
     errors.push({ field: "gender", reason: "성별을 선택해주세요." });
@@ -87,7 +98,7 @@ app.post("/users/signup", async (req, res) => {
       password: hashedPassword,
       nickname,
       gender,
-      birthdate,
+      birthdate: new Date(birthdate), // ✅ 문자열 → Date 객체 변환
       school,
       native_language,
       terms_agreement,
@@ -96,9 +107,15 @@ app.post("/users/signup", async (req, res) => {
       third_party_agreement,
     });
     await newUser.save();
-    res.status(201).json({ success: true });
+    const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '1h' });
+    res.status(201).json({ success: true, token }); // ✅ 프론트에서 바로 로그인 처리 가능!
+
   } catch (error) {
-    res.status(500).json({ success: false, errors: [{ field: "exception", reason: error }] });
+    console.error('❌ 회원가입 에러:', error);
+    res.status(500).json({
+      success: false,
+      errors: [{ field: "exception", reason: error.message || "알 수 없는 오류" }],
+    });
   }
 });
 
@@ -107,6 +124,7 @@ app.post("/users/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -115,6 +133,7 @@ app.post("/users/login", async (req, res) => {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -123,12 +142,18 @@ app.post("/users/login", async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "1h" });
-    res.status(200).json({ success: true, token });
+
+    return res.status(200).json({ success: true, token });
+
   } catch (error) {
-    res.status(500).json({ success: false, errors: [{ field: "exception", reason: error }] });
+    console.error('❌ 로그인 에러:', error);
+    res.status(500).json({
+      success: false,
+      errors: [{ field: "exception", reason: error.message || "알 수 없는 오류" }],
+    });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
+  console.log(`🚀 서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
