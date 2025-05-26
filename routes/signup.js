@@ -8,6 +8,7 @@ module.exports = (User) => {
     const {
       email,
       password,
+      name,
       nickname,
       gender,
       birthdate,
@@ -21,6 +22,15 @@ module.exports = (User) => {
 
     const errors = [];
 
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      errors.push({ field: "email", reason: "이미 존재하는 이메일입니다." });
+    }
+
+    if (!name) {
+      errors.push({ field: "name", reason: "이름을 입력해주세요." });
+    }
+
     if (!nickname) {
       errors.push({ field: "nickname", reason: "닉네임을 입력해주세요." });
     } else {
@@ -28,11 +38,6 @@ module.exports = (User) => {
       if (existingUser) {
         errors.push({ field: "nickname", reason: "이미 존재하는 닉네임입니다." });
       }
-    }
-
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
-      errors.push({ field: "email", reason: "이미 존재하는 이메일입니다." });
     }
 
     if (!gender) {
@@ -62,6 +67,7 @@ module.exports = (User) => {
       const newUser = new User({
         email,
         password: hashedPassword,
+        name,
         nickname,
         gender,
         birthdate: new Date(birthdate),
