@@ -15,7 +15,14 @@ app.use(express.json());
 mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+})
+.then(() => {
+  console.log("✅ MongoDB connected");
+})
+.catch((err) => {
+  console.error("❌ MongoDB connection error:", err);
 });
+
 
 // 스키마
 const User = require("./models/user");
