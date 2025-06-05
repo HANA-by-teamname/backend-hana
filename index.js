@@ -33,12 +33,14 @@ const loginRouter = require("./routes/login")(User);
 const feedRouter = require("./routes/feed")(Feed);
 const favoriteRouter = require("./routes/favorite");
 const socialRouter = require("./routes/social");
+const getFacultyRouter = require('./routes/getfaculty');
 
 app.use(signupRouter);
 app.use(loginRouter);
 app.use(feedRouter);
 app.use(favoriteRouter);
 app.use(socialRouter);
+app.use(getFacultyRouter); // 학부 목록 조회 라우터 추가
 
 app.listen(PORT, () => {
   console.log(`🚀 서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
