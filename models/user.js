@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   gender: { type: String, required: true },
   birthdate: { type: Date, required: true },
   faculty: { type: String, required: true },
+  data_sources: { type: [String], required: true },
   native_language: { type: String, required: true },
   terms_agreement: { type: Boolean, required: true },
   privacy_agreement: { type: Boolean, required: true },
