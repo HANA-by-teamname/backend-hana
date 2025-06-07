@@ -2,7 +2,7 @@
 
 ## 회원가입
 ``` bash
-curl -X POST http://localhost:4000/users/signup \
+curl -X POST http://localhost:4000/auth/signup \
 -H "Content-Type: application/json" \
 -d '{
   "email": "abc@cau.ac.kr",
@@ -22,7 +22,7 @@ curl -X POST http://localhost:4000/users/signup \
 
 ## 로그인
 ``` bash
-curl -X POST http://localhost:4000/users/login \
+curl -X POST http://localhost:4000/auth/login \
 -H "Content-Type: application/json" \
 -d '{
   "email": "abc@cau.ac.kr",

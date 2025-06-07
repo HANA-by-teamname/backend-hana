@@ -4,7 +4,7 @@ const { issueJWT } = require("../middlewares/authenticateJWT");
 const router = express.Router();
 
 module.exports = (User) => {
-  router.post("/users/login", async (req, res) => {
+  router.post("/auth/login", async (req, res) => {
     const { email, password } = req.body;
     try {
       const user = await User.findOne({ email });

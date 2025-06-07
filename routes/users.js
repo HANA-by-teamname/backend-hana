@@ -33,4 +33,38 @@ router.get('/check-nickname', async (req, res) => {
   }
 });
 
+// ✅ 유저 필터(data_sources) 업데이트 API
+router.patch('/update-faculty', authenticateJWT, async (req, res) => {
+  const { data_sources } = req.body;
+
+  if (!Array.isArray(data_sources)) {
+    return res.status(400).json({ success: false, error: 'data_sources는 배열이어야 합니다.' });
+  }
+
+  try {
+    await User.findByIdAndUpdate(req.user.id, { data_sources });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ 필터 업데이트 실패:', err);
+    res.status(500).json({ success: false, error: '서버 오류' });
+  }
+});
+// ✅ 유저 data source 수정 API
+
+// ✅ POST /api/user/lang
+router.post('/user/lang', authenticateJWT, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { language } = req.body;
+
+    await User.findByIdAndUpdate(userId, { native_language: language });
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('❌ 언어 업데이트 실패:', error);
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+
 module.exports = router;

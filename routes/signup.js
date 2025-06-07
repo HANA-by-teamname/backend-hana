@@ -4,7 +4,7 @@ const { issueJWT } = require("../middlewares/authenticateJWT");
 const router = express.Router();
 
 module.exports = (User) => {
-  router.post("/users/signup", async (req, res) => {
+  router.post("/auth/signup", async (req, res) => {
     const {
       email,
       password,
@@ -13,6 +13,7 @@ module.exports = (User) => {
       gender,
       birthdate,
       faculty,
+      data_sources,
       native_language,
       terms_agreement,
       privacy_agreement,
@@ -72,6 +73,7 @@ module.exports = (User) => {
         gender,
         birthdate: new Date(birthdate),
         faculty,
+        data_sources,
         native_language,
         terms_agreement,
         privacy_agreement,
