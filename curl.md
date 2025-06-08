@@ -12,6 +12,7 @@ curl -X POST http://localhost:4000/users/signup \
   "gender": "여자",
   "birthdate": "2002-11-09",
   "faculty": "중앙대학교",
+  "data_sources": ["소프트웨어학부", "경영학부", "AI학부"],
   "native_language": "베트남어",
   "terms_agreement": true,
   "privacy_agreement": true,
@@ -57,5 +58,19 @@ curl -X POST http://localhost:4000/favorites/delete \
 ## 관심목록 조회
 ``` bash
 curl -X GET http://localhost:4000/favorites/list \
+-H "Authorization: Bearer {your_token}"
+```
+
+## 챗봇 질문/답변
+``` bash
+curl -X POST http://localhost:4000/chatbot/message \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer {your_token}" \
+-d '{"message": "How to get to Chung-Ang University's Blue Mir Hall domitory?"}'
+```
+
+## 챗봇 히스토리 조회
+``` bash
+curl -X GET http://localhost:4000/chatbot/history \
 -H "Authorization: Bearer {your_token}"
 ```
