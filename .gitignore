@@ -19,3 +19,6 @@ Thumbs.db
 # 로그 파일
 logs/
 *.log
+
+# venv 가상 환경
+venv/

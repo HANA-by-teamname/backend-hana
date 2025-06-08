@@ -1,0 +1,7 @@
+python-dotenv
+pinecone
+sentence-transformers
+langchain
+langchain-community
+tqdm
+requests
