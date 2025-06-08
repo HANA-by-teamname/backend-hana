@@ -5,7 +5,7 @@ const { issueJWT } = require("../middlewares/authenticateJWT");
 const router = express.Router();
 
 // 카카오 소셜 로그인
-router.get("/auth/social/kakao", async (req, res) => {
+router.get("/users/social/kakao", async (req, res) => {
   const { code } = req.query;
   if (!code) {
     return res.status(400).json({ success: false, errors: [{ field: "code", reason: "인가 코드가 없습니다." }] });
@@ -58,7 +58,7 @@ router.get("/auth/social/kakao", async (req, res) => {
 });
 
 // 구글 소셜 로그인
-router.get("/auth/social/google", async (req, res) => {
+router.get("/users/social/google", async (req, res) => {
   const { code } = req.query;
   if (!code) {
     return res.status(400).json({ success: false, errors: [{ field: "code", reason: "인가 코드가 없습니다." }] });
