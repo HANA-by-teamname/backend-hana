@@ -52,9 +52,28 @@ module.exports = (User) => {
       });
     }
 
+    if (!faculty) {
+      errors.push({ field: "faculty", reason: "학부를 입력해주세요." });
+    }
+
+    if (!data_sources || !Array.isArray(data_sources) || data_sources.length === 0) {
+      errors.push({ field: "data_sources", reason: "데이터 소스를 1개 이상 선택해야 합니다." });
+    }
+
+    if (!native_language) {
+      errors.push({ field: "native_language", reason: "모국어를 선택해주세요." });
+    }
+
     if (!terms_agreement) {
       errors.push({
         field: "terms_agreement",
+        reason: "필수 항목이므로 반드시 동의해야 합니다.",
+      });
+    }
+
+    if (!privacy_agreement) {
+      errors.push({
+        field: "privacy_agreement",
         reason: "필수 항목이므로 반드시 동의해야 합니다.",
       });
     }
