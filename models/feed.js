@@ -5,7 +5,7 @@ const feedSchema = new mongoose.Schema({
   link: { type: String, required: true },
   faculty: { type: String, required: true },
   date: { type: Date, required: true },
-  content: { type: String, required: true }
+  content: { type: String }
 });
 
 const Feed = mongoose.model("Feed", feedSchema);

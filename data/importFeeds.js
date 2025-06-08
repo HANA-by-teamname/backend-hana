@@ -34,7 +34,7 @@ async function importFeedsFromFile(filename) {
 }
 
 async function importFeeds() {
-  const files = ['cau-notice.tsv', 'sw-notice.tsv']; // 추가할 파일명
+  const files = ['cau-notice.tsv', 'sw-notice.tsv', 'korean-department-notice.tsv', 'mechanical-notice.tsv', 'psyche-notice.tsv']; // 추가할 파일명
   for (const file of files) {
     const filePath = path.join(__dirname, file);
     if (fs.existsSync(filePath)) {
