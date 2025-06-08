@@ -1,4 +1,7 @@
 import os
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+
+import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
