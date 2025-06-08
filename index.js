@@ -35,6 +35,7 @@ const favoriteRouter = require("./routes/favorite");
 const socialRouter = require("./routes/social");
 const getFacultyRouter = require('./routes/getfaculty');
 const userRouter = require('./routes/users');
+const chatbotRouter = require("./routes/chatbot");
 
 app.use(signupRouter);
 app.use(loginRouter);
@@ -43,6 +44,7 @@ app.use(favoriteRouter);
 app.use(socialRouter);
 app.use(getFacultyRouter); // 학부 목록 조회 라우터 추가
 app.use('/users', userRouter);
+app.use(chatbotRouter);
 
 app.listen(PORT, () => {
   console.log(`🚀 서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
