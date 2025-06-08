@@ -36,7 +36,7 @@ curl -X POST http://localhost:4000/users/login \
 curl -X POST http://localhost:4000/feeds/search \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer {your_token}" \
--d '{"keyword":"장학금","faculty":["중앙대학교 NOTICE","소프트웨어학부"],"sort":"최신순"}'
+-d '{"keyword":"장학금", "sort":"최신순"}'
 ```
 
 ## 관심목록 추가

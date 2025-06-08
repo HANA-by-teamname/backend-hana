@@ -1,13 +1,23 @@
 const express = require("express");
 const Favorite = require("../models/favorite");
+const User = require("../models/user");
 const { authenticateJWT } = require("../middlewares/authenticateJWT");
 const router = express.Router();
 
 module.exports = (Feed) => {
   // 피드 검색 (JWT 인증 필요)
   router.post("/feeds/search", authenticateJWT, async (req, res) => {
-    const { keyword, faculty, sort } = req.body;
+    const { keyword, sort } = req.body;
     const user_id = req.user.id;
+
+    // 사용자 정보에서 data_sources(구독 학부) 조회
+    const user = await User.findById(user_id);
+    if (!user || !Array.isArray(user.data_sources) || user.data_sources.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "사용자의 data_sources(구독 학부) 정보가 없습니다."
+      });
+    }
 
     // 검색 조건
     const query = {};
@@ -17,9 +27,8 @@ module.exports = (Feed) => {
         { content: { $regex: keyword, $options: "i" } }
       ];
     }
-    if (faculty && Array.isArray(faculty) && faculty.length > 0) {
-      query.faculty = { $in: faculty };
-    }
+    // faculty는 user.data_sources 사용
+    query.faculty = { $in: user.data_sources };
 
     try {
       let feeds = [];
