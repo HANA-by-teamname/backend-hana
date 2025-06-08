@@ -74,3 +74,36 @@ curl -X POST http://localhost:4000/chatbot/message \
 curl -X GET http://localhost:4000/chatbot/history \
 -H "Authorization: Bearer {your_token}"
 ```
+
+## 시간표 과목 추가
+``` bash
+curl -X POST http://localhost:4000/timetable/add \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer {your_token}" \
+-d '{
+  "subject": "오픈소스SW프로젝트",
+  "day": "월",
+  "start_time": "13:00",
+  "end_time": "15:00",
+  "professor": "김영빈",
+  "location": "310관 727호"
+}'
+```
+
+## 시간표 과목 삭제
+``` bash
+curl -X DELETE http://localhost:4000/timetable/delete \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer {your_token}" \
+-d '{
+  "subject": "오픈소스SW프로젝트",
+  "day": "월",
+  "start_time": "13:00"
+}'
+```
+
+## 시간표 조회
+``` bash
+curl -X GET http://localhost:4000/timetable \
+-H "Authorization: Bearer {your_token}"
+```
