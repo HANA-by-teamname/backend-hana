@@ -1,53 +1,84 @@
 const express = require("express");
-const axios = require("axios");
+const { spawn } = require("child_process");
 const { authenticateJWT } = require("../middlewares/authenticateJWT");
-const router = express.Router();
 const ChatbotLog = require("../models/chatbotLog");
 
-// Ollama REST API 엔드포인트
-const OLLAMA_API_URL = process.env.OLLAMA_API_URL || "http://localhost:11434/api/chat";
+const router = express.Router();
 
-// 챗봇 질문 및 답변 생성
+// ✅ Python 기반 챗봇 실행 (스크립트 경로는 환경에 맞게 선택)
+const PYTHON_SCRIPT = process.env.PYTHON_SCRIPT_PATH || "./python-ai/chatbot.py";
+
+// ✅ 챗봇 메시지 처리
 router.post("/chatbot/message", authenticateJWT, async (req, res) => {
   const user_id = req.user.id;
   const { message } = req.body;
+
   if (!message) {
-    return res.status(400).json({ success: false, error: "메시지가 필요합니다." });
+    return res.status(400).json({ success: false, error: "메시지를 입력하세요." });
   }
 
   try {
-    // Ollama REST API 호출
-    const ollamaRes = await axios.post(OLLAMA_API_URL, {
-      model: "llama3", // 실제 사용 모델명으로 변경
-      messages: [{ role: "user", content: message }]
+    const python = spawn("python", [PYTHON_SCRIPT, message]);
+
+    let output = "";
+    let errorOutput = "";
+
+    python.stdout.on("data", (data) => {
+      output += data.toString();
     });
 
-    const answer = ollamaRes.data.message?.content || "답변을 생성할 수 없습니다.";
-
-    // 대화 이력 저장
-    await ChatbotLog.create({
-      user_id,
-      message,
-      answer
+    python.stderr.on("data", (data) => {
+      errorOutput += data.toString();
     });
 
-    res.json({ success: true, answer });
-  } catch (error) {
-    console.error("❌ Ollama API 오류:", error.message);
-    res.status(500).json({ success: false, error: "챗봇 응답 생성 중 오류가 발생했습니다." });
+    python.on("close", async (code) => {
+      try {
+        if (code !== 0 || errorOutput) {
+          console.error("❌ Python 오류:", errorOutput);
+          return res.status(500).json({ success: false, error: "챗봇 응답 생성 중 오류가 발생했습니다." });
+        }
+
+        // ✅ JSON 파싱
+        let parsed;
+        try {
+          parsed = JSON.parse(output.trim());
+        } catch (err) {
+          console.error("❌ JSON 파싱 오류:", err.message, "output:", output);
+          return res.status(500).json({ success: false, error: "챗봇 응답 파싱 중 오류가 발생했습니다." });
+        }
+
+        const answer = parsed.answer || parsed.error || "챗봇 응답이 없습니다.";
+
+        // ✅ MongoDB에 대화 이력 저장
+        await ChatbotLog.create({
+          user_id,
+          message,
+          answer
+        });
+
+        res.json({ success: true, answer });
+      } catch (err) {
+        console.error("❌ 서버 내부 오류:", err.message);
+        res.status(500).json({ success: false, error: "서버 오류가 발생했습니다." });
+      }
+    });
+  } catch (err) {
+    console.error("❌ 서버 내부 오류:", err.message);
+    res.status(500).json({ success: false, error: "서버 오류가 발생했습니다." });
   }
 });
 
-// 대화 이력 조회
+// ✅ 대화 이력 조회
 router.get("/chatbot/history", authenticateJWT, async (req, res) => {
   const user_id = req.user.id;
   try {
-    // 로그인한 사용자의 전체 대화 이력 조회 (오래된 순)
     const history = await ChatbotLog.find({ user_id })
       .sort({ createdAt: 1 })
-      .select("message answer createdAt -_id"); // message, answer, createdAt만 반환
+      .select("message answer createdAt -_id");
+
     res.json({ success: true, history });
-  } catch (error) {
+  } catch (err) {
+    console.error("❌ 이력 조회 오류:", err.message);
     res.status(500).json({ success: false, error: "대화 이력 조회 중 오류가 발생했습니다." });
   }
 });
