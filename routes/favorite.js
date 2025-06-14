@@ -10,21 +10,18 @@ router.post("/favorites/add", authenticateJWT, async (req, res) => {
   const { feed_id } = req.body;
   const errors = [];
 
-  // 피드 존재 여부 확인
-  const feed = await Feed.findById(feed_id);
-  if (!feed) {
-    errors.push({ field: "feedId", reason: "유효한 공지 ID가 아닙니다." });
-    return res.json({ success: false, errors });
-  }
-
   // 이미 관심목록에 있는지 확인
   const exists = await Favorite.findOne({ user_id, feed_id });
   if (exists) {
-    return res.json({ success: true, errors: [] });
+    return res.status(409).json({
+      success: false,
+      errors: [{ field: "feedId", reason: "이미 관심목록에 추가된 공지입니다." }]
+    });
   }
 
+  // 관심목록에 없으면 추가
   await Favorite.create({ user_id, feed_id });
-  res.json({ success: true, errors: [] });
+  res.status(201).json({ success: true, errors: [] });
 });
 
 // 관심목록 삭제
@@ -36,11 +33,11 @@ router.post("/favorites/delete", authenticateJWT, async (req, res) => {
   const favorite = await Favorite.findOne({ user_id, feed_id });
   if (!favorite) {
     errors.push({ field: "feedId", reason: "해당 공지가 관심 목록에 없습니다." });
-    return res.json({ success: false, errors });
+    return res.status(404).json({ success: false, errors });
   }
 
   await Favorite.deleteOne({ _id: favorite._id });
-  res.json({ success: true, errors: [] });
+  res.status(200).json({ success: true, errors: [] });
 });
 
 // 관심목록 조회
@@ -60,7 +57,7 @@ router.get("/favorites/list", authenticateJWT, async (req, res) => {
     };
   });
 
-  res.json({ feeds });
+  res.status(200).json({ feeds });
 });
 
 module.exports = router;
