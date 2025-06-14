@@ -130,7 +130,7 @@ npm start
 ---
 
 ## 📑 API 문서
-- 전체 API 문서는 [Postman Docs](https://documenter.getpostman.com/)에서 확인할 수 있습니다.  
+- HANA API 문서는 [Postman Docs](https://documenter.getpostman.com/view/45329803/2sB2x6nsYn)에서 확인할 수 있습니다.  
 - 웹 문서에서 각 API 설명과 예시를 확인할 수 있으며,  
 **"Run in Postman"** 버튼을 클릭하면 Postman 앱에서 바로 import하여 테스트할 수 있습니다.
 
