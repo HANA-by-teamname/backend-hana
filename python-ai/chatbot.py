@@ -6,6 +6,7 @@ import os
 from pinecone import Pinecone
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
+from langdetect import detect
 import requests
 import json
 
@@ -29,12 +30,23 @@ try:
     results = index.query(vector=query_embedding, top_k=3, include_metadata=True)
     retrieved_chunks = [match['metadata']['text'] for match in results['matches']]
 
+    lang_code = detect(question)
+    language_map = {
+        'ko': 'Korean',
+        'ja': 'Japanese',
+        'zh': 'Chinese',
+        'en': 'English',
+        # 필요시 추가
+    }
+
+    lang_name = language_map.get(lang_code, 'English') 
+
     # ✅ 프롬프트 구성
     context = "\n\n".join(retrieved_chunks)
     prompt = f"""
-아래 질문에 대해, 질문한 언어로 대답할 수 있으면 해당 언어로 답변하고,
-그렇지 않으면 영어로 답변하세요.
-답변은 간결하게, 필요한 내용만 빠르게 작성해 주세요.
+You are a helpful assistant. Please answer the following question in **{lang_name}**.
+If you cannot write in {lang_name}, answer in English instead.
+
 
 문서 내용:
 {context}
@@ -47,7 +59,7 @@ try:
     response = requests.post(
         "http://localhost:11434/api/generate",
         json={
-            "model": "llama3",
+            "model": "llama3.1:8b",
             "prompt": prompt,
             "stream": False
         }
