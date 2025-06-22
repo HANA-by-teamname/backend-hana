@@ -55,9 +55,12 @@ If you cannot write in {lang_name}, answer in English instead.
 {question}
 """
 
+    # ✅ Ollama API 주소를 환경변수에서 가져오기 (기본값: http://localhost:11434)
+    OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", "http://localhost:11434")
+
     # ✅ Ollama API 호출
     response = requests.post(
-        "http://localhost:11434/api/generate",
+        f"{OLLAMA_API_URL}/api/generate",
         json={
             "model": "llama3.1:8b",
             "prompt": prompt,
