@@ -47,8 +47,8 @@ try:
     # ✅ 프롬프트 구성
     context = "\n\n".join(retrieved_chunks)
     prompt = f"""
-You are a helpful assistant. Please answer the following question in **{lang_name}**.
-If you cannot write in {lang_name}, answer in English instead.
+You are a helpful assistant. Please answer the following question in {lang_name} only.
+Do not include translations or answers in other languages.
 
 
 문서 내용:
