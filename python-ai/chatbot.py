@@ -21,7 +21,7 @@ try:
 
     # ✅ Pinecone 연결
     pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-    index = pc.Index("chatbot")
+    index = pc.Index("test")
 
     # ✅ 임베딩 모델 로드
     model = SentenceTransformer("intfloat/multilingual-e5-small")
