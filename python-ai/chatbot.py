@@ -9,6 +9,9 @@ from dotenv import load_dotenv
 from langdetect import detect
 import requests
 import json
+import warnings
+
+warnings.filterwarnings("ignore")
 
 load_dotenv()
 

@@ -33,9 +33,12 @@ router.post("/chatbot/message", authenticateJWT, async (req, res) => {
 
     python.on("close", async (code) => {
       try {
-        if (code !== 0 || errorOutput) {
+        if (code !== 0) {
           console.error("❌ Python 오류:", errorOutput);
           return res.status(500).json({ success: false, error: "챗봇 응답 생성 중 오류가 발생했습니다." });
+        }
+        if (errorOutput) {
+          console.warn("⚠️ Python 경고:", errorOutput);
         }
 
         // ✅ JSON 파싱
