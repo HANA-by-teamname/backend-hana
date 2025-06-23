@@ -61,6 +61,7 @@ backend-hana/
 - **MongoDB**: [MongoDB 공식 사이트](https://www.mongodb.com/try/download/community)  
   (로컬 개발/테스트용, Atlas를 쓸 경우 생략 가능)
 - **Ollama**: [Ollama 공식 사이트](https://ollama.com/download)
+  (llama3.1:8b 모델 사용)
 - **VSCode**: [VSCode 공식 사이트](https://code.visualstudio.com/) (선택)
 
 ### 2. 저장소 클론
